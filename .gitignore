@@ -10,5 +10,6 @@ lib-cov
 pids
 logs
 results
+.c9revisions/
 
 npm-debug.log
