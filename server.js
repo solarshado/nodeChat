@@ -38,3 +38,4 @@ function showRawFile(response, fileName) {
 }
 
 http.createServer(handleRequest).listen(process.env.PORT);
+console.log("listening on " + process.env.IP + ":" + process.env.PORT);
