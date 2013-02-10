@@ -7,7 +7,8 @@ var server = require('http').createServer(handleRequest)
     ;
 
 var rawExts = [".htm", ".js", ".css", ".html"],
-    defaultFilename = "chat.html";
+    defaultFilename = "chat.html"
+    socketsAry = [];
 
 function handleRequest(request, response) {
     var pathname = url.parse(request.url).pathname,
@@ -19,7 +20,7 @@ function handleRequest(request, response) {
     
     if(!pathname ||
         (dirname === "/" &&
-            ( basename === "" || _.contains(rawExts, extname)))) {
+            (basename === "" || _.contains(rawExts, extname)))) {
            serveStaticFile(response, basename);
     }
 }
@@ -50,5 +51,20 @@ function getContentType(filename) {
 }
 
 server.listen(process.env.PORT);
+
+io.sockets.on('connection', function (socket) {
+    socketsAry.push(socket);
+
+    socket.on('disconnect', function () {
+        var index = socketsAry.indexOf(socket);
+        if (index != -1)
+	    socketsAry.splice(index, 1);
+    });
+
+    socket.on('chatMsg', function (data) {
+        for(var i = 0; i < socketsAry.length; i++)
+	    socketsAry[i].emit('chatMsg', data);
+    });
+});
 
 console.log("listening on " + process.env.IP + ":" + process.env.PORT);
