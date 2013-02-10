@@ -1,4 +1,5 @@
-var http = require('http')
+var server = require('http').createServer(handleRequest)
+    ,io = require('socket.io').listen(server)
     ,url = require("url")
     ,path = require("path") 
     ,fs = require("fs")
@@ -19,11 +20,11 @@ function handleRequest(request, response) {
     if(!pathname ||
         (dirname === "/" &&
             ( basename === "" || _.contains(rawExts, extname)))) {
-           showRawFile(response, basename);
+           serveStaticFile(response, basename);
     }
 }
 
-function showRawFile(response, fileName) {
+function serveStaticFile(response, fileName) {
     var fileToRead = "./pub/" + (fileName || defaultFilename);
     fs.readFile(fileToRead, function(error, content) {
         if (error) {
@@ -31,11 +32,23 @@ function showRawFile(response, fileName) {
             response.end();
         }
         else {
-            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.writeHead(200, {'Content-Type': getContentType(fileToRead)});
             response.end(content, 'utf-8');
         }
     });
 }
 
-http.createServer(handleRequest).listen(process.env.PORT);
+function getContentType(filename) {
+    if(/\.html?$/.test(filename))
+        return "text/html";
+    else if(/\.js$/.test(filename))
+        return "text/javascript";
+    else if(/\.css$/.test(filename))
+        return "text/css";
+    else
+        return "text/plain";
+}
+
+server.listen(process.env.PORT);
+
 console.log("listening on " + process.env.IP + ":" + process.env.PORT);
