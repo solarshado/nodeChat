@@ -51,7 +51,7 @@ function getContentType(filename) {
         return "text/plain";
 }
 
-server.listen(process.env.PORT);
+server.listen(process.env.PORT, process.env.IP);
 
 io.sockets.on('connection', function (socket) {
     socketsAry.push(socket);
