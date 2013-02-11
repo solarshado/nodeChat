@@ -8,6 +8,7 @@ var server = require('http').createServer(handleRequest)
     ;
 
 var rawExts = [".htm", ".js", ".css", ".html"],
+    rawsDirName = "pub",
     defaultFilename = "chat.html"
     socketsAry = [];
 
@@ -27,7 +28,9 @@ function handleRequest(request, response) {
 }
 
 function serveStaticFile(response, fileName) {
-    var fileToRead = "./pub/" + (fileName || defaultFilename);
+    
+    var fileToRead = path.resolve(__dirname, rawsDirName, (fileName || defaultFilename));
+
     fs.readFile(fileToRead, function(error, content) {
         if (error) {
             response.writeHead(500);
