@@ -2,7 +2,7 @@ $(document).ready(function() {
 	//var socket = io.connect(window.location.host);
 	var socket = io.connect(),
 	    inputBox = $("input#message"),
-	    logBox = $("textarea#messageLog");
+	    logBox = $("#messageLog");
 
 	$("form#chatform").on('submit', function() {
 		socket.emit('chatMsg', inputBox.val());
@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 	socket.on('chatMsg', function(data) {
 		console.log("Received: " + data);
-		appendMessage(data);
+		appendMessage(Message(data));
 	});
 
 	function appendMessage(msg) {

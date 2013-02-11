@@ -4,6 +4,7 @@ var server = require('http').createServer(handleRequest)
     ,path = require("path") 
     ,fs = require("fs")
     ,_ = require('underscore')
+    ,Message = require("./pub/Message")
     ;
 
 var rawExts = [".htm", ".js", ".css", ".html"],
@@ -63,7 +64,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('chatMsg', function (data) {
         for(var i = 0; i < socketsAry.length; i++)
-	    socketsAry[i].emit('chatMsg', data);
+	    socketsAry[i].emit('chatMsg', Message("someone",data));
     });
 });
 
