@@ -69,7 +69,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('chatMsg', function (data) {
         socket.get('name', function(err, name) {
-            var msg = Message(name, data);
+            var msg = Message(name, data || '');
 	    socket.emit('chatMsg', msg);
 	    socket.broadcast.emit('chatMsg', msg);
 	});
