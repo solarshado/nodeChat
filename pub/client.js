@@ -44,14 +44,29 @@ $(document).ready(function() {
 
 	function appendMessage(msg) {
 		// TODO fixme!
-		logBox.val(logBox.val() + msg.toString() + "\n");
+		//logBox.val(logBox.val() + msg.toString() + "\n");
+		var html = '<div class="message">' +
+			   '<span class="sender">' + msg.from + '</span>' +
+			   '<span class="content">' + msg.content + '</span>' +
+			   '</div>';
+		logBox.append(html);
 	}
 	function appendJoin(who) {
 		// TODO fixme!
-		logBox.val(logBox.val() + who + " joined\n");
+		//logBox.val(logBox.val() + who + " joined\n");
+		var html = '<div class="message">' +
+			   '<span class="system">' + 'Joined' + '</span>' +
+			   '<span class="message">' + who + '</span>' +
+			   '</div>';
+		logBox.append(html);
 	}
 	function appendLeave(who) {
 		// TODO fixme!
-		logBox.val(logBox.val() + who + " left\n");
+		//logBox.val(logBox.val() + who + " left\n");
+		var html = '<div class="message">' +
+			   '<span class="system">' + 'Left' + '</span>' +
+			   '<span class="message">' + who + '</span>' +
+			   '</div>';
+		logBox.append(html);
 	}
 });
