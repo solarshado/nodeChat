@@ -17,7 +17,7 @@ function handleRequest(request, response) {
         basename = path.basename(pathname),
         extname = path.extname(pathname);
     
-    console.log("requested: '"+pathname+"'");
+    console.log("request from "+request.connection.remoteAddress+" for '"+pathname+"'");
     
     if(!pathname ||
         (dirname === "/" &&
