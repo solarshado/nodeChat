@@ -10,9 +10,11 @@ $(document).ready(function() {
 	loginForm.on('submit', function() {
 		if(!aliasBox.val()) return false;
 
-		var socket = io.connect().on('connect', function() {
+		var socket = io.connect("", {'auto connect':false})
+		socket.on('connect', function() {
 			setupSocket(socket);
 		});
+		socket.socket.connect(); // this is bizare
 		return false;
 	});
 
