@@ -9,8 +9,7 @@ var server = require('http').createServer(handleRequest)
 
 var rawExts = [".htm", ".js", ".css", ".html"],
     rawsDirName = "pub",
-    defaultFilename = "chat.html"
-    socketsAry = [];
+    defaultFilename = "chat.html";
 
 function handleRequest(request, response) {
     var pathname = url.parse(request.url).pathname,
@@ -28,7 +27,6 @@ function handleRequest(request, response) {
 }
 
 function serveStaticFile(response, fileName) {
-    
     var fileToRead = path.resolve(__dirname, rawsDirName, (fileName || defaultFilename));
 
     fs.readFile(fileToRead, function(error, content) {
@@ -57,17 +55,24 @@ function getContentType(filename) {
 server.listen(process.env.PORT, process.env.IP);
 
 io.sockets.on('connection', function (socket) {
-    socketsAry.push(socket);
-
     socket.on('disconnect', function () {
-        var index = socketsAry.indexOf(socket);
-        if (index != -1)
-	    socketsAry.splice(index, 1);
+        socket.get('name', function(err, name) {
+		socket.broadcast.emit('leave', name);
+	});
+    });
+
+    socket.on('join', function (name) {
+        socket.set('name', name, function() {
+            socket.broadcast.emit('join', name);
+	});
     });
 
     socket.on('chatMsg', function (data) {
-        for(var i = 0; i < socketsAry.length; i++)
-	    socketsAry[i].emit('chatMsg', Message("someone",data));
+        socket.get('name', function(err, name) {
+            var msg = Message(name, data);
+	    socket.emit('chatMsg', msg);
+	    socket.broadcast.emit('chatMsg', msg);
+	});
     });
 });
 
