@@ -31,35 +31,35 @@ $(document).ready(function() {
 			return false;
 		});
 
-		socket.on('chatMsg', function(data) {
-			console.log("Received: " + data);
-			appendMessage(Message(data));
-		});
+		socket.on('chatMsg', preParse(appendMessage));
+		socket.on('join', preParse(appendJoin));
+		socket.on('leave', preParse(appendLeave));
+	}
 
-		// TODO expand Message to include
-		// leave and join
-		socket.on('join', appendJoin);
-		socket.on('leave', appendLeave);
+	function preParse(func) {
+		return function(data) {
+			func(Message.parse(data));
+		}
 	}
 
 	function appendMessage(msg) {
 		var html = '<div class="message">' +
-			   '<span class="sender">' + msg.from + '</span>' +
-			   '<span class="content">' + msg.content + '</span>' +
+			   '<span class="sender">' + msg.person() + '</span>' +
+			   '<span class="content">' + msg.content() + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}
-	function appendJoin(who) {
+	function appendJoin(msg) {
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Joined' + '</span>' +
-			   '<span class="content">' + who + '</span>' +
+			   '<span class="content">' + msg.person() + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}
-	function appendLeave(who) {
+	function appendLeave(msg) {
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Left' + '</span>' +
-			   '<span class="content">' + who + '</span>' +
+			   '<span class="content">' + msg.person() + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}

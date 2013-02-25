@@ -1,31 +1,45 @@
 (function() { // private scope
 
-function Message(a,b) {
-	// TODO add date
-	// TODO make this all-around better... ('-_-')->(self)
-	var from, content, obj;
-	if (b) {
-		from = a;
-		content = b;
-	}
-	else {
-		obj = (typeof a === 'string') ? JSON.parse(a) : a;
+var message = {};
 
-		from = obj.from;
-		content = obj.content;
-	}
-	return {'from': from, 'content': content, 'toString': messageToString };
+function Message(data) {
+	var //type = data.type,
+	    //person = data.who,
+	    //content = data.what,
+	    date = new Date(data.when);
+	return {
+		'type': function() { return data.type; },
+		'person': function() { return data.person; },
+		'content': function() { return data.content; },
+		'date': function() { return date; },
+		'toJSON': function() { return JSON.stringify(data); }
+		};
 }
 
-function messageToString() {
-	return this.from + " says: " + this.content;
+message.parse = function(jsonString) {
+	return new Message(JSON.parse(jsonString));
+}
+
+message.joined = function(who, when) {
+	when = when || new Date();
+	return new Message({'type': 'joined', 'who': who, 'when': when});
+};
+
+message.left = function(who, when) {
+	when = when || new Date();
+	return new Message({'type': 'left', 'who': who, 'when': when});
+};
+
+message.said = function(who, what, when) {
+	when = when || new Date();
+	return new Message({'type': 'said', 'who': who, 'what': what, 'when': when});
 }
 
 if(typeof module === "object") {
-	module.exports = Message;
+	module.exports = message;
 }
 else { // running in browser
-	this.Message = Message;
+	this.Message = message;
 }
 
 })();
