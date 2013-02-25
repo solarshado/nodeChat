@@ -9,8 +9,8 @@ function Message(data) {
 	    date = new Date(data.when);
 	return {
 		'type': function() { return data.type; },
-		'person': function() { return data.person; },
-		'content': function() { return data.content; },
+		'person': function() { return data.who; },
+		'content': function() { return data.what; },
 		'date': function() { return date; },
 		'toJSON': function() { return JSON.stringify(data); }
 		};
