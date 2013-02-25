@@ -43,8 +43,6 @@ $(document).ready(function() {
 	}
 
 	function appendMessage(msg) {
-		// TODO fixme!
-		//logBox.val(logBox.val() + msg.toString() + "\n");
 		var html = '<div class="message">' +
 			   '<span class="sender">' + msg.from + '</span>' +
 			   '<span class="content">' + msg.content + '</span>' +
@@ -52,8 +50,6 @@ $(document).ready(function() {
 		logBox.append(html);
 	}
 	function appendJoin(who) {
-		// TODO fixme!
-		//logBox.val(logBox.val() + who + " joined\n");
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Joined' + '</span>' +
 			   '<span class="content">' + who + '</span>' +
@@ -61,8 +57,6 @@ $(document).ready(function() {
 		logBox.append(html);
 	}
 	function appendLeave(who) {
-		// TODO fixme!
-		//logBox.val(logBox.val() + who + " left\n");
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Left' + '</span>' +
 			   '<span class="message">' + who + '</span>' +
