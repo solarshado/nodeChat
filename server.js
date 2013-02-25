@@ -67,9 +67,10 @@ io.sockets.on('connection', function (socket) {
 	});
     });
 
-    socket.on('chatMsg', function (data) {
+    socket.on('chatMsg', function (text) {
+        if(!text) return; // no message? no-op
         socket.get('name', function(err, name) {
-            var msg = Message(name, data || '');
+            var msg = Message(name, text);
 	    socket.emit('chatMsg', msg);
 	    socket.broadcast.emit('chatMsg', msg);
 	});
