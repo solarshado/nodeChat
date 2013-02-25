@@ -55,8 +55,8 @@ $(document).ready(function() {
 		// TODO fixme!
 		//logBox.val(logBox.val() + who + " joined\n");
 		var html = '<div class="message">' +
-			   '<span class="system">' + 'Joined' + '</span>' +
-			   '<span class="message">' + who + '</span>' +
+			   '<span class="sender system">' + 'Joined' + '</span>' +
+			   '<span class="content">' + who + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}
@@ -64,7 +64,7 @@ $(document).ready(function() {
 		// TODO fixme!
 		//logBox.val(logBox.val() + who + " left\n");
 		var html = '<div class="message">' +
-			   '<span class="system">' + 'Left' + '</span>' +
+			   '<span class="sender system">' + 'Left' + '</span>' +
 			   '<span class="message">' + who + '</span>' +
 			   '</div>';
 		logBox.append(html);
