@@ -65,7 +65,7 @@ $(document).ready(function() {
 		//logBox.val(logBox.val() + who + " left\n");
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Left' + '</span>' +
-			   '<span class="message">' + who + '</span>' +
+			   '<span class="content">' + who + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}
