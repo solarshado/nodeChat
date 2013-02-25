@@ -59,7 +59,7 @@ $(document).ready(function() {
 	function appendLeave(who) {
 		var html = '<div class="message">' +
 			   '<span class="sender system">' + 'Left' + '</span>' +
-			   '<span class="message">' + who + '</span>' +
+			   '<span class="content">' + who + '</span>' +
 			   '</div>';
 		logBox.append(html);
 	}
