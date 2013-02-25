@@ -32,7 +32,7 @@ div#content {
 }
 
 #messageLog .message .system {
-	color: black;
+	color: darkRed;
 	border-color: red;
 	background-color: pink;
 }
