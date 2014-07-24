@@ -32,8 +32,8 @@ $(document).ready(function() {
 		});
 
 		socket.on('chatMsg', preParse(appendMessage));
-		socket.on('join', preParse(appendJoin));
-		socket.on('leave', preParse(appendLeave));
+		socket.on('join', preParse(appendMessage));
+		socket.on('leave', preParse(appendMessage));
 	}
 
 	function preParse(func) {
@@ -43,24 +43,30 @@ $(document).ready(function() {
 	}
 
 	function appendMessage(msg) {
-		var html = '<div class="message">' +
-			   '<span class="sender">' + msg.person() + '</span>' +
-			   '<span class="content">' + msg.content() + '</span>' +
-			   '</div>';
-		logBox.append(html);
-	}
-	function appendJoin(msg) {
-		var html = '<div class="message">' +
-			   '<span class="sender system">' + 'Joined' + '</span>' +
-			   '<span class="content">' + msg.person() + '</span>' +
-			   '</div>';
-		logBox.append(html);
-	}
-	function appendLeave(msg) {
-		var html = '<div class="message">' +
-			   '<span class="sender system">' + 'Left' + '</span>' +
-			   '<span class="content">' + msg.person() + '</span>' +
-			   '</div>';
-		logBox.append(html);
+		var message = $('<div class="message" />'),
+		    sender = $('<span class="sender" />'),
+		    content = $('<span class="content" />');
+		message.append(sender).append(content);
+		
+		message.prop('title', msg.date());
+
+		var msgType = msg.type();
+		if(msgType === 'joined') {
+			sender.addClass('system');
+			sender.text('Joined');
+			content.text(msg.person());
+		}
+		else if(msgType === 'left') {
+			sender.addClass('system');
+			sender.text('Left');
+			content.text(msg.person());
+		}
+		else if(msgType === 'said') {
+			sender.text(msg.person());
+			content.text(msg.content());
+		}
+
+		logBox.append(message);
+		logBox.scrollTop(logBox.prop('scrollHeight'));
 	}
 });
