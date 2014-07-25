@@ -9,7 +9,8 @@ var server = require('http').createServer(handleRequest)
 
 var rawExts = [".htm", ".js", ".css", ".html"],
     rawsDirName = "pub",
-    defaultFilename = "chat.html";
+    defaultFilename = "chat.html",
+    userList = [];
 
 function handleRequest(request, response) {
     var pathname = url.parse(request.url).pathname,
@@ -52,18 +53,34 @@ function getContentType(filename) {
         return "text/plain";
 }
 
+function addUser(name) {
+    var idx = userList.indexOf(name);
+    if(idx !== -1) return;
+    userList.push(name);
+}
+
+function removeUser(name) {
+    var idx = userList.indexOf(name);
+    if(idx === -1) return;
+    userList.splice(idx,1);
+}
+
 server.listen(process.env.PORT, process.env.IP);
 
 io.on('connection', function (socket) {
     socket.on('disconnect', function () {
-        var time = new Date();
+        var time = new Date(),
+            name = socket.name;
+        removeUser(name);
         socket.broadcast.emit('leave', Message.left(name, time).toJSON());
     });
 
     socket.on('join', function (name) {
         var time = new Date();
         socket.name = name;
+        addUser(name);
         socket.broadcast.emit('join', Message.joined(name,time).toJSON());
+        socket.emit('userList', Message.userList(userList));
     });
 
     socket.on('chatMsg', function (text) {
