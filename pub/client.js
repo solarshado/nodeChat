@@ -15,7 +15,7 @@ $(document).ready(function() {
 		socket.on('connect', function() {
 			setupSocket(socket);
 		});
-		socket.socket.connect(); // this is bizare
+		socket.connect();
 		return false;
 	});
 

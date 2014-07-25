@@ -1,5 +1,5 @@
 var server = require('http').createServer(handleRequest)
-    ,io = require('socket.io').listen(server)
+    ,io = require('socket.io')(server)
     ,url = require("url")
     ,path = require("path") 
     ,fs = require("fs")
@@ -54,29 +54,25 @@ function getContentType(filename) {
 
 server.listen(process.env.PORT, process.env.IP);
 
-io.sockets.on('connection', function (socket) {
+io.on('connection', function (socket) {
     socket.on('disconnect', function () {
         var time = new Date();
-        socket.get('name', function(err, name) {
-		socket.broadcast.emit('leave', Message.left(name, time).toJSON());
-	});
+        socket.broadcast.emit('leave', Message.left(name, time).toJSON());
     });
 
     socket.on('join', function (name) {
         var time = new Date();
-        socket.set('name', name, function() {
-            socket.broadcast.emit('join', Message.joined(name,time).toJSON());
-	});
+        socket.name = name;
+        socket.broadcast.emit('join', Message.joined(name,time).toJSON());
     });
 
     socket.on('chatMsg', function (text) {
         if(!text) return; // no message? no-op
-        var time = new Date();
-        socket.get('name', function(err, name) {
-            var msg = Message.said(name, text, time).toJSON();
-	    socket.emit('chatMsg', msg);
-	    socket.broadcast.emit('chatMsg', msg);
-	});
+        var time = new Date(),
+            name = socket.name,
+            msg = Message.said(name, text, time).toJSON();
+        socket.emit('chatMsg', msg);
+        socket.broadcast.emit('chatMsg', msg);
     });
 });
 
