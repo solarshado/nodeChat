@@ -35,6 +35,13 @@ message.said = function(who, what, when) {
 	return new Message({'type': 'said', 'who': who, 'what': what, 'when': when});
 }
 
+message.userList = function(usernameArray) {
+	usernameArray = (usernameArray instanceof Array) ? 
+				usernameArray :
+				Array(usernameArray);
+	return new Message({'type': 'userList', 'what': usernameArray});
+}
+
 if(typeof module === "object") {
 	module.exports = message;
 }

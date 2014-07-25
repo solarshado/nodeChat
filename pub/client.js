@@ -5,7 +5,8 @@ $(document).ready(function() {
 	    chatForm = 	$("form#chatForm"),
 	    aliasBox = $("input#name"),
 	    inputBox = $("input#message"),
-	    logBox = $("#messageLog");
+	    logBox = $("#messageLog"),
+	    userList = $("ul#userList");
 
 	loginForm.on('submit', function() {
 		if(!aliasBox.val()) return false;
@@ -34,6 +35,7 @@ $(document).ready(function() {
 		socket.on('chatMsg', preParse(appendMessage));
 		socket.on('join', preParse(appendMessage));
 		socket.on('leave', preParse(appendMessage));
+		socket.on('userList', preParse(updateUserList));
 	}
 
 	function preParse(func) {
@@ -43,14 +45,14 @@ $(document).ready(function() {
 	}
 
 	function appendMessage(msg) {
-		var message = $('<div class="message" />'),
+		var msgType = msg.type(),
+		    message = $('<div class="message" />'),
 		    sender = $('<span class="sender" />'),
 		    content = $('<span class="content" />');
 		message.append(sender).append(content);
 		
 		message.prop('title', msg.date());
 
-		var msgType = msg.type();
 		if(msgType === 'joined') {
 			sender.addClass('system');
 			sender.text('Joined');
@@ -68,5 +70,38 @@ $(document).ready(function() {
 
 		logBox.append(message);
 		logBox.scrollTop(logBox.prop('scrollHeight'));
+
+		if(msgType === 'joined' || msgType === 'left')
+			updateUserList(msg);
+	}
+
+	function updateUserList(msg) {
+		var msgType = msg.type(),
+		    who = msg.person(),
+		    list = msg.content();
+		
+		if(msgType === 'joined') {
+			userList.append(buildListItem(who));
+		}
+		else if(msgType === 'left') {
+			getListItem(who).remove();
+		}
+		else if(msgType === 'userList') {
+			userList.children('li').remove();
+			$.each(list, function(i, val) {
+				userList.append(buildListItem(val));
+			});
+		}
+
+		function getListItem(username) {
+			return userList
+				.children()
+				.filterByData('username', username);
+		}
+		function buildListItem(username) {
+			return $('<li />')
+				.text(username)
+				.data('username',username);
+		}
 	}
 });

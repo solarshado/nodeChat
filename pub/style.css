@@ -1,4 +1,3 @@
-
 form#chatForm {
 	display: none;
 }
@@ -6,12 +5,12 @@ form#chatForm {
 div#content {
 	margin-left: auto ;
 	margin-right: auto ;
-	width: 500px ;
+	width: 800px ;
 }
 
 #messageLog {
-	width: 100%;
-	height: 200px;
+	width: 575px;
+	height: 500px;
 	border: solid 2px grey;
 	overflow-y: scroll;
 	padding: 4px;
@@ -38,4 +37,28 @@ div#content {
 
 #messageLog .message .content {
 	margin-left: 0.25em;	
+}
+
+#userListWrapper {
+	width: 200px;
+	height: 500px;
+	border: solid 2px grey;
+	overflow-y: scroll;
+	padding: 4px;
+	float: right;
+}
+
+#userList {
+	list-style-type: none;
+	margin: 0;
+	padding: inherit;
+}
+
+#userList li {
+	font-weight: bold;
+	color: green;
+	border: solid 1px green;
+	border-radius: 3px;
+	background-color: lightGreen;
+	text-align: center;
 }
