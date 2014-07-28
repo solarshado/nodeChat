@@ -1,7 +1,5 @@
 $(document).ready(function() {
-	//var socket = io.connect(window.location.host);
-	var //socket, // = io.connect(),
-	    loginForm = $("form#loginForm"),
+	var loginForm = $("form#loginForm"),
 	    chatForm = 	$("form#chatForm"),
 	    aliasBox = $("input#name"),
 	    inputBox = $("input#message"),
