@@ -1,5 +1,5 @@
 var TitleNotification = TitleNotification || (function () {
-	var timerId,
+	var timerId = false,
 	    oldTitle,
 	    ticInterval = 350,
 	    isTock = false,
@@ -14,12 +14,15 @@ var TitleNotification = TitleNotification || (function () {
 
 	var obj = {
 		enable: function() {
+			if(!!timerId) return; // already running
 			oldTitle = document.title;
 			timerId = setInterval(tic,ticInterval);
 		},
 		disable: function() {
+			if(!timerId) return; // already stopped
 			clearInterval(timerId);
-			document.title= oldTitle;
+			document.title = oldTitle;
+			timerId = false;
 		}
 	}
 	return obj;
