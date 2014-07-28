@@ -6,6 +6,8 @@ $(document).ready(function() {
 	    logBox = $("#messageLog"),
 	    userList = $("ul#userList");
 
+	$(window).focus(TitleNotification.disable);
+
 	loginForm.on('submit', function() {
 		if(!aliasBox.val()) return false;
 
@@ -71,6 +73,9 @@ $(document).ready(function() {
 
 		if(msgType === 'joined' || msgType === 'left')
 			updateUserList(msg);
+
+		if(!document.hasFocus())
+			TitleNotification.enable();
 	}
 
 	function updateUserList(msg) {
