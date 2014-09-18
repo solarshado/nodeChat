@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	var loginForm = $("form#loginForm"),
-		chatForm = 	$("form#chatForm"),
+		chatForm = $("form#chatForm"),
 		aliasBox = $("input#name"),
 		inputBox = $("input#message"),
 		logBox = $("#messageLog"),
