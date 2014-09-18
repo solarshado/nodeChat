@@ -62,3 +62,9 @@ div#content {
 	background-color: lightGreen;
 	text-align: center;
 }
+
+#codeOnGitHub {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+}
