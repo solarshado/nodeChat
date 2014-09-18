@@ -4,9 +4,9 @@ var message = {};
 
 function Message(data) {
 	var //type = data.type,
-	    //person = data.who,
-	    //content = data.what,
-	    date = new Date(data.when);
+		//person = data.who,
+		//content = data.what,
+		date = new Date(data.when);
 	return {
 		'type': function() { return data.type; },
 		'person': function() { return data.who; },

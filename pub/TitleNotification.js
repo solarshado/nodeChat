@@ -1,10 +1,10 @@
 var TitleNotification = TitleNotification || (function () {
 	var timerId = false,
-	    oldTitle,
-	    ticInterval = 350,
-	    isTock = false,
-	    UNDERBAR = "__",
-	    OVERBAR = String.fromCharCode(0x203E, 0x203E);
+		oldTitle,
+		ticInterval = 350,
+		isTock = false,
+		UNDERBAR = "__",
+		OVERBAR = String.fromCharCode(0x203E, 0x203E);
 
 	function tic() {
 		isTock = !isTock;

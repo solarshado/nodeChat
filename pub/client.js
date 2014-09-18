@@ -1,10 +1,10 @@
 $(document).ready(function() {
 	var loginForm = $("form#loginForm"),
-	    chatForm = 	$("form#chatForm"),
-	    aliasBox = $("input#name"),
-	    inputBox = $("input#message"),
-	    logBox = $("#messageLog"),
-	    userList = $("ul#userList");
+		chatForm = 	$("form#chatForm"),
+		aliasBox = $("input#name"),
+		inputBox = $("input#message"),
+		logBox = $("#messageLog"),
+		userList = $("ul#userList");
 
 	$(window).focus(TitleNotification.disable);
 
@@ -46,9 +46,9 @@ $(document).ready(function() {
 
 	function appendMessage(msg) {
 		var msgType = msg.type(),
-		    message = $('<div class="message" />'),
-		    sender = $('<span class="sender" />'),
-		    content = $('<span class="content" />');
+			message = $('<div class="message" />'),
+			sender = $('<span class="sender" />'),
+			content = $('<span class="content" />');
 		message.append(sender).append(content);
 		
 		message.prop('title', msg.date());
@@ -80,8 +80,8 @@ $(document).ready(function() {
 
 	function updateUserList(msg) {
 		var msgType = msg.type(),
-		    who = msg.person(),
-		    list = msg.content();
+			who = msg.person(),
+			list = msg.content();
 		
 		if(msgType === 'joined') {
 			userList.append(buildListItem(who));
