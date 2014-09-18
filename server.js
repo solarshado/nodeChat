@@ -7,7 +7,7 @@ var server = require('http').createServer(handleRequest)
 	,Message = require("./pub/Message")
 	;
 
-var rawExts = [".htm", ".js", ".css", ".html"],
+var rawExts = [".htm", ".js", ".css", ".html", ".ico"],
 	rawsDirName = "pub",
 	defaultFilename = "chat.html",
 	userList = [];
