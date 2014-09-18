@@ -7,12 +7,13 @@ var TitleNotification = TitleNotification || (function () {
 		UNDERBAR = "__",
 		OVERBAR = String.fromCharCode(0x203E, 0x203E)
 		STAR = "*"
+		UNDERSTAR = "."
 		;
 
 	function tic() {
 		isTock = !isTock;
 		var afix = isTock ? UNDERBAR : OVERBAR,
-			innerAfix = useStar ? STAR : "";
+			innerAfix = useStar ? isTock ? STAR : UNDERSTAR : "";
 		document.title = afix + innerAfix + " " + oldTitle + " " + innerAfix + afix;
 	}
 
