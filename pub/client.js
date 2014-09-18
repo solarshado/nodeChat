@@ -68,6 +68,8 @@ $(document).ready(function() {
 			content.text(msg.content());
 		}
 
+		linkifyUrls(content);
+
 		logBox.append(message);
 		logBox.scrollTop(logBox.prop('scrollHeight'));
 
@@ -76,6 +78,16 @@ $(document).ready(function() {
 
 		if(!document.hasFocus())
 			TitleNotification.enable();
+	}
+
+	function linkifyUrls(messageContent) {
+		var html = messageContent.html(),
+			urlMatcher = new RegExp("(\\w+://[^\\s]+)",'g'),
+			linkTemplate = '<a target="_blank" href="$&">$&</a>';
+
+		html = html.replace(urlMatcher, linkTemplate);
+
+		messageContent.html(html);
 	}
 
 	function updateUserList(msg) {
