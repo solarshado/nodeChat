@@ -29,7 +29,8 @@ var TitleNotification = TitleNotification || (function () {
 			document.title = oldTitle;
 			timerId = false;
 			useStar = false;
-		}
+		},
+		isEnabled: function() { return !!timerId; }
 	}
 	return obj;
 })();
