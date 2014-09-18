@@ -66,9 +66,8 @@ $(document).ready(function() {
 		else if(msgType === 'said') {
 			sender.text(msg.person());
 			content.text(msg.content());
+			linkifyUrls(content);
 		}
-
-		linkifyUrls(content);
 
 		logBox.append(message);
 		logBox.scrollTop(logBox.prop('scrollHeight'));
