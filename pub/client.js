@@ -77,6 +77,8 @@ $(document).ready(function() {
 
 		if(!document.hasFocus())
 			TitleNotification.enable();
+
+		searchForMyName(msg);
 	}
 
 	function linkifyUrls(messageContent) {
@@ -87,6 +89,17 @@ $(document).ready(function() {
 		html = html.replace(urlMatcher, linkTemplate);
 
 		messageContent.html(html);
+	}
+
+	function searchForMyName(message) {
+		if(message.type() !== "said") return;
+		if(!TitleNotification.isEnabled()) return;
+
+		var alias = aliasBox.val(),
+			aliasRegex = new RegExp("@"+alias);
+
+		if(aliasRegex.test(message.content()))
+			TitleNotification.enableStar();
 	}
 
 	function updateUserList(msg) {
