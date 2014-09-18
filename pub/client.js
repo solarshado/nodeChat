@@ -24,7 +24,7 @@ $(document).ready(function() {
 		socket.emit('join', alias);
 
 		loginForm.hide('slow');
-		chatForm.show('slow');
+		chatForm.show('slow', function() { inputBox.focus(); });
 
 		chatForm.on('submit', function() {
 			socket.emit('chatMsg', inputBox.val());
