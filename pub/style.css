@@ -63,6 +63,11 @@ div#content {
 	text-align: center;
 }
 
+input#message {
+	width: 65%;
+	margin-top: 1em;
+}
+
 #codeOnGitHub {
 	position: fixed;
 	bottom: 10px;
