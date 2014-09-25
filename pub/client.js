@@ -4,12 +4,14 @@ $(document).ready(function() {
 		aliasBox = $("input#name"),
 		inputBox = $("input#message"),
 		logBox = $("#messageLog"),
-		userList = $("ul#userList");
+		userList = $("ul#userList"),
+		alias = "";
 
 	$(window).focus(TitleNotification.disable);
 
 	loginForm.on('submit', function() {
 		if(!aliasBox.val()) return false;
+		alias = aliasBox.val();
 
 		var socket = io.connect("", {'auto connect':false})
 		socket.on('connect', function() {
@@ -20,7 +22,6 @@ $(document).ready(function() {
 	});
 
 	function setupSocket(socket) {
-		var alias = aliasBox.val();
 		socket.emit('join', alias);
 
 		loginForm.hide('slow');
@@ -95,8 +96,7 @@ $(document).ready(function() {
 		if(message.type() !== "said") return;
 		if(!TitleNotification.isEnabled()) return;
 
-		var alias = aliasBox.val(),
-			aliasRegex = new RegExp("@"+alias);
+		var aliasRegex = new RegExp("@"+alias);
 
 		if(aliasRegex.test(message.content()))
 			TitleNotification.enableStar();
