@@ -84,7 +84,7 @@ $(document).ready(function() {
 	function linkifyUrls(messageContent) {
 		var html = messageContent.html(),
 			urlMatcher = new RegExp("(\\w+://[^\\s]+)",'g'),
-			linkTemplate = '<a target="_blank" href="$&">$&</a>';
+			linkTemplate = '<a target="_blank" rel="noreferrer" href="$&">$&</a>';
 
 		html = html.replace(urlMatcher, linkTemplate);
 
