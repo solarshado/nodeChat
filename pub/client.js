@@ -14,18 +14,19 @@ $(document).ready(function() {
 		alias = aliasBox.val();
 
 		var socket = io.connect("", {'auto connect':false})
-		socket.on('connect', function() {
-			setupSocket(socket);
-		});
+		setupSocket(socket);
 		socket.connect();
+
+		loginForm.hide('slow');
+		chatForm.show('slow', function() { inputBox.focus(); });
+
 		return false;
 	});
 
 	function setupSocket(socket) {
-		socket.emit('join', alias);
-
-		loginForm.hide('slow');
-		chatForm.show('slow', function() { inputBox.focus(); });
+		socket.on('connect', function() {
+			socket.emit('join', alias);
+		});
 
 		chatForm.on('submit', function() {
 			socket.emit('chatMsg', inputBox.val());
