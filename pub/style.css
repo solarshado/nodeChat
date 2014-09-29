@@ -20,6 +20,10 @@ div#content {
 	margin: 2px;
 }
 
+#messageLog .message.lastSeen {
+	border-bottom: 1px solid red;
+}
+
 #messageLog .message .sender {
 	font-weight: bold;
 	color: green;
