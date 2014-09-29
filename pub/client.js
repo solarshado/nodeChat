@@ -7,7 +7,7 @@ $(document).ready(function() {
 		userList = $("ul#userList"),
 		alias = "";
 
-	$(window).focus(TitleNotification.disable);
+	$(window).focus(onWindowFocus).blur(onWindowBlur);
 
 	loginForm.on('submit', function() {
 		if(!aliasBox.val()) return false;
@@ -131,5 +131,14 @@ $(document).ready(function() {
 				.text(username)
 				.data('username',username);
 		}
+	}
+
+	function onWindowFocus() {
+		TitleNotification.disable();
+	}
+
+	function onWindowBlur() {
+		$('.message.lastSeen').removeClass("lastSeen");
+		$('.message').last().addClass("lastSeen");
 	}
 });
