@@ -25,6 +25,7 @@ $(document).ready(function() {
 
 	userList.on('click', "li", onUserNameClick);
 	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
+	logBox.on('click', "a", function() { inputBox.focus(); });
 
 	function setupSocket(socket) {
 		socket.on('connect', function() {
