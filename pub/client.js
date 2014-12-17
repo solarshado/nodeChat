@@ -52,7 +52,7 @@ $(document).ready(function() {
 			message = $('<div class="message" />'),
 			sender = $('<span class="sender" />'),
 			content = $('<span class="content" />');
-		message.append(sender).append(content);
+		message.append(sender).append(" ").append(content);
 		
 		message.prop('title', msg.date());
 

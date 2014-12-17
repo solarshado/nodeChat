@@ -39,10 +39,6 @@ div#content {
 	background-color: pink;
 }
 
-#messageLog .message .content {
-	margin-left: 0.25em;	
-}
-
 #userListWrapper {
 	width: 200px;
 	height: 500px;
