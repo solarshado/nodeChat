@@ -23,6 +23,9 @@ $(document).ready(function() {
 		return false;
 	});
 
+	userList.on('click', "li", onUserNameClick);
+	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
+
 	function setupSocket(socket) {
 		socket.on('connect', function() {
 			socket.emit('join', alias);
@@ -132,6 +135,13 @@ $(document).ready(function() {
 				.text(username)
 				.data('username',username);
 		}
+	}
+
+	function onUserNameClick() {
+		var username = $(this).text(),
+		    oldValue = inputBox.val();
+		inputBox.val(oldValue + ('@'+username) + " ");
+		inputBox.focus();
 	}
 
 	function onWindowFocus() {
