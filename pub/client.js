@@ -31,6 +31,7 @@ $(document).ready(function() {
 		chatForm.on('submit', function() {
 			socket.emit('chatMsg', inputBox.val());
 			inputBox.val('');
+			inputBox.focus();
 			return false;
 		});
 
