@@ -1,24 +1,27 @@
 $(document).ready(function() {
 	var loginForm = $("form#loginForm"),
+		loginStatus = $("span#loginStatus"),
 		chatForm = $("form#chatForm"),
 		aliasBox = $("input#name"),
 		inputBox = $("input#message"),
 		logBox = $("#messageLog"),
 		userList = $("ul#userList"),
+		socket = io.connect(),
+		loggingIn = false,
 		alias = "";
+
+	setupSocket(socket);
 
 	$(window).focus(onWindowFocus).blur(onWindowBlur);
 
 	loginForm.on('submit', function() {
-		if(!aliasBox.val()) return false;
-		alias = aliasBox.val();
+		var alias_ = aliasBox.val().trim();
+		if(!alias_) return false;
 
-		var socket = io.connect("", {'auto connect':false})
-		setupSocket(socket);
-		socket.connect();
-
-		loginForm.hide('slow');
-		chatForm.show('slow', function() { inputBox.focus(); });
+		alias = alias_;
+		loggingIn = true;
+		loginStatus.text("Logging in...");
+		socket.emit('join', alias);
 
 		return false;
 	});
@@ -27,11 +30,19 @@ $(document).ready(function() {
 	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
 	logBox.on('click', "a", function() { inputBox.focus(); });
 
-	function setupSocket(socket) {
-		socket.on('connect', function() {
-			socket.emit('join', alias);
-		});
+	function loginSucceeded() {
+		loggingIn = false;
+		loginStatus.text("Logged in!");
+		loginForm.hide('slow');
+		chatForm.show('slow', function() { inputBox.focus(); });
+	}
 
+	function loginFailed(message) {
+		loggingIn = false;
+		loginStatus.text("Login failed: " + message);
+	}
+
+	function setupSocket(socket) {
 		chatForm.on('submit', function() {
 			socket.emit('chatMsg', inputBox.val());
 			inputBox.val('');
@@ -43,6 +54,7 @@ $(document).ready(function() {
 		socket.on('join', preParse(appendMessage));
 		socket.on('leave', preParse(appendMessage));
 		socket.on('userList', preParse(updateUserList));
+		socket.on('rejectUsername', loginFailed);
 	}
 
 	function preParse(func) {
@@ -53,6 +65,7 @@ $(document).ready(function() {
 
 	function appendMessage(msg) {
 		var msgType = msg.type(),
+			msgPerson = msg.person(),
 			message = $('<div class="message" />'),
 			sender = $('<span class="sender" />'),
 			content = $('<span class="content" />');
@@ -61,17 +74,23 @@ $(document).ready(function() {
 		message.prop('title', msg.date());
 
 		if(msgType === 'joined') {
-			sender.addClass('system');
-			sender.text('Joined');
-			content.text(msg.person());
+			if(loggingIn && msgPerson === alias) {
+				loginSucceeded();
+				return;
+			}
+			else {
+				sender.addClass('system');
+				sender.text('Joined');
+				content.text(msgPerson);
+			}
 		}
 		else if(msgType === 'left') {
 			sender.addClass('system');
 			sender.text('Left');
-			content.text(msg.person());
+			content.text(msgPerson);
 		}
 		else if(msgType === 'said') {
-			sender.text(msg.person());
+			sender.text(msgPerson);
 			content.text(msg.content());
 			linkifyUrls(content);
 		}

@@ -71,16 +71,22 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		var time = new Date(),
 			name = socket.name;
+		if(name === undefined) return;
 		removeUser(name);
 		socket.broadcast.emit('leave', Message.left(name, time).toJSON());
 	});
 
 	socket.on('join', function (name) {
 		var time = new Date();
-		socket.name = name;
-		addUser(name);
-		socket.broadcast.emit('join', Message.joined(name,time).toJSON());
-		socket.emit('userList', Message.userList(userList));
+		if(userList.indexOf(name) === -1) {
+			socket.name = name;
+			addUser(name);
+			io.emit('join', Message.joined(name,time).toJSON());
+			socket.emit('userList', Message.userList(userList));
+		}
+		else { // username already exists
+			socket.emit('rejectUsername', "Username already in use.");
+		}
 	});
 
 	socket.on('chatMsg', function (text) {
@@ -88,6 +94,7 @@ io.on('connection', function (socket) {
 		var time = new Date(),
 			name = socket.name,
 			msg = Message.said(name, text, time).toJSON();
+		if(name === undefined) return; // ignore messages from connections with no username
 		socket.emit('chatMsg', msg);
 		socket.broadcast.emit('chatMsg', msg);
 	});
