@@ -3,14 +3,18 @@ $(document).ready(function() {
 		loginStatus = $("span#loginStatus"),
 		chatForm = $("form#chatForm"),
 		aliasBox = $("input#name"),
+		rememberMeCbx = $("input#rememberMe"),
 		inputBox = $("input#message"),
 		logBox = $("#messageLog"),
 		userList = $("ul#userList"),
+		storage = window.storage,
+		hasStorage = storage !== null,
 		socket = io.connect(),
 		loggingIn = false,
 		alias = "";
 
 	setupSocket(socket);
+	handleSavedUsername();
 
 	$(window).focus(onWindowFocus).blur(onWindowBlur);
 
@@ -23,12 +27,31 @@ $(document).ready(function() {
 		loginStatus.text("Logging in...");
 		socket.emit('join', alias);
 
+		if(hasStorage)
+			if(rememberMeCbx.is(':checked'))
+				storage.set("savedUsername", alias);
+			else // clear remembered name
+				storage.set("savedUsername", undefined);
+
 		return false;
 	});
 
 	userList.on('click', "li", onUserNameClick);
 	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
 	logBox.on('click', "a", function() { inputBox.focus(); });
+
+	function handleSavedUsername() {
+		if(!hasStorage) {
+			rememberMeCbx.attr("disabled", true);
+			return;
+		}
+
+		var val = storage.get("savedUsername");
+		if(val) {
+			rememberMeCbx.prop('checked', true);
+			aliasBox.val(val);
+		}
+	}
 
 	function loginSucceeded() {
 		loggingIn = false;
