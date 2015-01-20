@@ -49,6 +49,8 @@ function getContentType(filename) {
 		return "text/javascript";
 	else if(/\.css$/.test(filename))
 		return "text/css";
+	else if(/\.ico$/.test(filename))
+		return "image/x-icon";
 	else
 		return "text/plain";
 }
