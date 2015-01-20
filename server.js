@@ -7,7 +7,7 @@ var server = require('http').createServer(handleRequest)
 	,Message = require("./pub/Message")
 	;
 
-var rawExts = [".htm", ".js", ".css", ".html", ".ico"],
+var rawExts = [".html", ".js", ".css", ".htm", ".json", ".ico"],
 	rawsDirName = "pub",
 	defaultFilename = "chat.html",
 	userList = [];
@@ -55,6 +55,8 @@ function getContentType(filename) {
 		return "text/javascript";
 	else if(/\.css$/.test(filename))
 		return "text/css";
+	else if(/\.json$/.test(filename))
+		return "application/json";
 	else if(/\.ico$/.test(filename))
 		return "image/x-icon";
 	else
