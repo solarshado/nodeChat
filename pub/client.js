@@ -95,8 +95,7 @@ $(document).ready(function() {
 			linkifyUrls(content);
 		}
 
-		logBox.append(message);
-		logBox.scrollTop(logBox.prop('scrollHeight'));
+		addMessageandScroll(message);
 
 		if(msgType === 'joined' || msgType === 'left')
 			updateUserList(msg);
@@ -105,6 +104,19 @@ $(document).ready(function() {
 			TitleNotification.enable();
 
 		searchForMyName(msg);
+	}
+
+	function addMessageandScroll(message) {
+		var innerHeight = logBox.innerHeight(),
+		    scrollHeight = logBox.prop("scrollHeight"),
+		    scrollTop = logBox.prop("scrollTop");
+
+		// grab sizes BEFORE adding the message
+		logBox.append(message);
+
+		// only scroll if scrolled to bottom beforehand
+		if(((innerHeight + scrollTop) - scrollHeight) == 0)
+			logBox.scrollTop(scrollHeight);
 	}
 
 	function linkifyUrls(messageContent) {
