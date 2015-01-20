@@ -21,9 +21,9 @@ function handleRequest(request, response) {
 	console.log("request from "+request.connection.remoteAddress+" for '"+pathname+"'");
 
 	if(!pathname ||
-		(dirname === "/" &&
+		((dirname === "/" || dirname === "/themes" ) &&
 			(basename === "" || _.contains(rawExts, extname)))) {
-		   serveStaticFile(response, basename);
+		   serveStaticFile(response, dirname, basename);
 	}
 	else {
 		response.writeHead(400);
@@ -31,8 +31,10 @@ function handleRequest(request, response) {
 	}
 }
 
-function serveStaticFile(response, fileName) {
-	var fileToRead = path.resolve(__dirname, rawsDirName, (fileName || defaultFilename));
+function serveStaticFile(response, dirName, fileName) {
+	var fileToRead = path.resolve(__dirname, path.join(rawsDirName, dirName, (fileName || defaultFilename)));
+
+//	console.log("trying to serve: "+fileToRead);
 
 	fs.readFile(fileToRead, function(error, content) {
 		if (error) {
