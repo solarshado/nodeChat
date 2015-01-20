@@ -17,13 +17,17 @@ function handleRequest(request, response) {
 		dirname = path.dirname(pathname),
 		basename = path.basename(pathname),
 		extname = path.extname(pathname);
-	
+
 	console.log("request from "+request.connection.remoteAddress+" for '"+pathname+"'");
-	
+
 	if(!pathname ||
 		(dirname === "/" &&
 			(basename === "" || _.contains(rawExts, extname)))) {
 		   serveStaticFile(response, basename);
+	}
+	else {
+		response.writeHead(400);
+		response.end();
 	}
 }
 
