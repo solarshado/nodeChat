@@ -14,6 +14,7 @@ div#content {
 	border: solid 2px grey;
 	overflow-y: scroll;
 	padding: 4px;
+	margin-bottom: 1em;
 }
 
 #messageLog .message {
@@ -63,9 +64,13 @@ div#content {
 	text-align: center;
 }
 
+#themeSelectorWrapper {
+	display: inline;
+	float: right;
+}
+
 input#message {
 	width: 65%;
-	margin-top: 1em;
 }
 
 #codeOnGitHub {
