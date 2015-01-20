@@ -1,0 +1,65 @@
+div#content {
+/*
+	width: 800px;
+*/
+}
+
+#messageLog {
+/*
+	width: 575px;
+	height: 500px;
+	border: solid 2px grey;
+*/
+}
+
+#messageLog .message.lastSeen {
+/*
+	border-bottom: 1px solid red;
+*/
+}
+
+#messageLog .message .sender {
+/*
+	font-weight: bold;
+	color: green;
+	border: solid 1px green;
+	border-radius: 3px;
+	background-color: lightGreen;
+*/
+}
+
+#messageLog .message .system {
+/*
+	color: darkRed;
+	border-color: red;
+	background-color: pink;
+*/
+}
+
+#userListWrapper {
+/*
+	width: 200px;
+	height: 500px;
+	border: solid 2px grey;
+	float: right;
+*/
+}
+
+#userList {
+/*
+	list-style-type: none;
+	margin: 0;
+	padding: inherit;
+*/
+}
+
+#userList li {
+/*
+	font-weight: bold;
+	color: green;
+	border: solid 1px green;
+	border-radius: 3px;
+	background-color: lightGreen;
+	text-align: center;
+*/
+}
