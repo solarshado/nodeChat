@@ -78,11 +78,3 @@ input#message {
 	bottom: 10px;
 	right: 10px;
 }
-
-a:link {
-	color: snow;
-}
-
-a:visited {
-	color: grey;
-}
