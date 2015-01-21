@@ -28,3 +28,11 @@ body {
 	border-color: green;
 	background-color: black;
 }
+
+a:link {
+	color: snow;
+}
+
+a:visited {
+	color: grey;
+}
