@@ -1,0 +1,29 @@
+body {
+	background-color: #3CB371;
+}
+
+#messageLog {
+	border-color: white;
+}
+
+#messageLog .message .sender {
+	color: green;
+	border-color: green;
+	background-color: lightGreen;
+}
+
+#messageLog .message .system {
+	color: black;
+	border-color: red;
+	background-color: darkred;
+}
+
+#userListWrapper {
+	border-color: white;
+}
+
+#userList li {
+	color: green;
+	border-color: green;
+	background-color: lightGreen;
+}
