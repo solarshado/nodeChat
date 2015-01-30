@@ -156,9 +156,9 @@ $(document).ready(function() {
 		if(message.type() !== "said") return;
 		if(!TitleNotification.isEnabled()) return;
 
-		var aliasRegex = new RegExp("@"+alias);
+		var aliasTag = "@"+alias;
 
-		if(aliasRegex.test(message.content()))
+		if(message.content().indexOf(aliasTag) !== -1)
 			TitleNotification.enableStar();
 	}
 
