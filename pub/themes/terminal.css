@@ -1,0 +1,35 @@
+body {
+	color: green;
+	border-color: green;
+	background-color: black;
+}
+
+#messageLog {
+	border-color: gray;
+}
+
+#messageLog .message.lastSeen {
+	border-bottom: 1px solid green;
+}
+
+#messageLog .message .sender {
+	color: green;
+	border-color: green;
+	background-color: black;
+}
+
+#messageLog .message .system {
+	color: green;
+	border-color: green;
+	background-color: black;
+}
+
+#userListWrapper {
+	border-color: gray;
+}
+
+#userList li {
+	color: green;
+	border-color: green;
+	background-color: black;
+}
