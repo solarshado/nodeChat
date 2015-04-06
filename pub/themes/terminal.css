@@ -1,10 +1,15 @@
 body {
-	color: #AAA;
-	background-color: #222;
+	color: green;
+	border-color: green;
+	background-color: black;
 }
 
 #messageLog {
 	border-color: gray;
+}
+
+#messageLog .message.lastSeen {
+	border-bottom: 1px solid green;
 }
 
 #messageLog .message .sender {
@@ -14,9 +19,9 @@ body {
 }
 
 #messageLog .message .system {
-	color: black;
-	border-color: red;
-	background-color: darkred;
+	color: green;
+	border-color: green;
+	background-color: black;
 }
 
 #userListWrapper {
@@ -27,12 +32,4 @@ body {
 	color: green;
 	border-color: green;
 	background-color: black;
-}
-
-a:link {
-	color: snow;
-}
-
-a:visited {
-	color: LightSlateGray; 
 }
