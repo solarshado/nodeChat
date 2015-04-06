@@ -138,7 +138,7 @@ $(document).ready(function() {
 		logBox.append(message);
 
 		// only scroll if scrolled to bottom beforehand
-		if(((innerHeight + scrollTop) - scrollHeight) == 0)
+		if(((innerHeight + scrollTop) - scrollHeight) >= 0)
 			logBox.scrollTop(scrollHeight);
 	}
 
