@@ -1,0 +1,24 @@
+{
+  "name": "nodeChat",
+  "version": "1.1.0",
+  "description": "nodeChat ========",
+  "main": "server.js",
+  "dependencies": {
+    "socket.io": "^1.2.1",
+    "underscore": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solarshado/nodeChat"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/solarshado/nodeChat/issues"
+  },
+  "homepage": "https://github.com/solarshado/nodeChat"
+}
