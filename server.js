@@ -100,7 +100,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('chatMsg', function (text) {
-		if(!text) return; // no message? no-op
+		if(!text || !String(text).trim()) return; // no message? no-op
 		var time = new Date(),
 			name = socket.name,
 			msg = Message.said(name, text, time).toJSON();

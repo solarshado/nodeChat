@@ -2,6 +2,7 @@ $(document).ready(function() {
 	var loginForm = $("form#loginForm"),
 		loginStatus = $("span#loginStatus"),
 		chatForm = $("form#chatForm"),
+		sendButton = chatForm.children("input:submit"),
 		aliasBox = $("input#name"),
 		rememberMeCbx = $("input#rememberMe"),
 		inputBox = $("input#message"),
@@ -39,6 +40,9 @@ $(document).ready(function() {
 	userList.on('click', "li", onUserNameClick);
 	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
 	logBox.on('click', "a", function() { inputBox.focus(); });
+	inputBox.on('input keyup', function() {
+		sendButton.prop('disabled', !inputBox.val().trim());
+	});
 
 	function handleSavedUsername() {
 		if(!hasStorage) {
@@ -67,7 +71,7 @@ $(document).ready(function() {
 
 	function setupSocket(socket) {
 		chatForm.on('submit', function() {
-			socket.emit('chatMsg', inputBox.val());
+			socket.emit('chatMsg', inputBox.val().trim());
 			inputBox.val('');
 			inputBox.focus();
 			return false;
