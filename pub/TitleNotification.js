@@ -5,10 +5,9 @@ var TitleNotification = TitleNotification || (function () {
 		isTock = false,
 		useStar = false,
 		UNDERBAR = "__",
-		OVERBAR = String.fromCharCode(0x203E, 0x203E)
-		STAR = "*"
-		UNDERSTAR = "."
-		;
+		OVERBAR = String.fromCharCode(0x203E, 0x203E),
+		STAR = "*",
+		UNDERSTAR = ".";
 
 	function tic() {
 		isTock = !isTock;
