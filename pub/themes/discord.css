@@ -1,0 +1,35 @@
+body {
+	color: #99AAB5;
+	border-color: #7289DA;
+	background-color: #23272A;
+}
+
+#messageLog {
+	border-color: #7289DA;
+}
+
+#messageLog .message.lastSeen {
+	border-bottom: 1px solid #B04343;
+}
+
+#messageLog .message .sender {
+	color: #99AAB5;
+	border-color: #7289DA;
+	background-color: #2C2F33;
+}
+
+#messageLog .message .system {
+	color: #99AAB5;
+	border-color: #7289DA;
+	background-color: #2C2F33;
+}
+
+#userListWrapper {
+	border-color: #7289DA;
+}
+
+#userList li {
+	color: #99AAB5;
+	border-color: #7289DA;
+	background-color: #23272A;
+}
