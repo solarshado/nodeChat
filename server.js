@@ -1,28 +1,37 @@
-var server = require('http').createServer(handleRequest)
-	,io = require('socket.io')(server)
-	,url = require("url")
-	,path = require("path") 
-	,fs = require("fs")
-	,_ = require('underscore')
-	,Message = require("./pub/Message")
-	;
+import * as url from "node:url";
+import * as path from "node:path";
+import * as fs from "node:fs";
+import { createServer } from "node:http";
 
-var rawExts = [".html", ".js", ".css", ".htm", ".json", ".ico"],
-	rawsDirName = "pub",
-	defaultFilename = "chat.html",
-	userList = [];
+import Message from "./pub/Message.js";
+
+import sio from "socket.io";
+
+const server = createServer(handleRequest);
+const io = sio(server);
+
+const listenIP = process.env["IP"];
+const listenPort = +process.env["PORT"];
+
+const rawExts = [".html", ".js", ".css", ".htm", ".json", ".ico"];
+const rawsDirName = "pub";
+const defaultFilename = "chat.html";
+const userList = [];
 
 function handleRequest(request, response) {
-	var pathname = url.parse(request.url).pathname,
-		dirname = path.dirname(pathname),
-		basename = path.basename(pathname),
-		extname = path.extname(pathname);
+	const pathname = url.parse(request.url).pathname;
+	const dirname = path.dirname(pathname);
+	const basename = path.basename(pathname);
+	const extname = path.extname(pathname);
 
 	console.log("request from "+request.connection.remoteAddress+" for '"+pathname+"'");
 
-	if(!pathname ||
+	const shouldServeStatic =
+		!pathname ||
 		((dirname === "/" || dirname === "/themes" ) &&
-			(basename === "" || _.contains(rawExts, extname)))) {
+			(basename === "" || rawExts.includes(extname)))
+
+	if(shouldServeStatic) {
 		   serveStaticFile(response, dirname, basename);
 	}
 	else {
@@ -31,8 +40,10 @@ function handleRequest(request, response) {
 	}
 }
 
+const appRootDir = path.dirname(url.fileURLToPath(import.meta.url))
+
 function serveStaticFile(response, dirName, fileName) {
-	var fileToRead = path.resolve(__dirname, path.join(rawsDirName, dirName, (fileName || defaultFilename)));
+	const fileToRead = path.resolve(appRootDir, path.join(rawsDirName, dirName, (fileName || defaultFilename)));
 
 //	console.log("trying to serve: "+fileToRead);
 
@@ -64,30 +75,33 @@ function getContentType(filename) {
 }
 
 function addUser(name) {
-	var idx = userList.indexOf(name);
-	if(idx !== -1) return;
+	if(userList.includes(name))
+		return;
 	userList.push(name);
 }
 
 function removeUser(name) {
-	var idx = userList.indexOf(name);
-	if(idx === -1) return;
+	const idx = userList.indexOf(name);
+	if(idx === -1)
+		return;
 	userList.splice(idx,1);
 }
 
-server.listen(process.env.PORT, process.env.IP);
+server.listen(listenPort, listenIP);
 
 io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
-		var time = new Date(),
-			name = socket.name;
-		if(name === undefined) return;
+		const { name } = socket;
+		if(name === undefined)
+			return;
+
+		const time = new Date();
 		removeUser(name);
 		socket.broadcast.emit('leave', Message.left(name, time).toJSON());
 	});
 
 	socket.on('join', function (name) {
-		var time = new Date();
+		const time = new Date();
 		if(userList.indexOf(name) === -1) {
 			socket.name = name;
 			addUser(name);
@@ -100,14 +114,19 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('chatMsg', function (text) {
-		if(!text || !String(text).trim()) return; // no message? no-op
-		var time = new Date(),
-			name = socket.name,
-			msg = Message.said(name, text, time).toJSON();
-		if(name === undefined) return; // ignore messages from connections with no username
+		if(!text || !String(text).trim())
+			return; // no message? no-op
+
+		const { name } = socket;
+		if(name === undefined)
+			return; // ignore messages from connections with no username
+
+		const time = new Date();
+		const msg = Message.said(name, text, time).toJSON();
+
 		socket.emit('chatMsg', msg);
 		socket.broadcast.emit('chatMsg', msg);
 	});
 });
 
-console.log("listening on " + process.env.IP + ":" + process.env.PORT);
+console.log("listening on " + listenIP + ":" + listenPort);
