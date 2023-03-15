@@ -23,6 +23,10 @@ const inputBox = document.querySelector("input#message");
 const logBox = document.querySelector("div#messageLog");
 /** @type HTMLUListElement */
 const userList = document.querySelector("ul#userList");
+/** @type HTMLTemplateElement */
+const normalMessageTemplate = document.querySelector("template#normalMessageTemplate");
+/** @type HTMLTemplateElement */
+const systemMessageTemplate = document.querySelector("template#systemMessageTemplate");
 
 const socket = io.connect();
 
@@ -132,24 +136,19 @@ function appendMessage(msg) {
 	const msgType = msg.type();
 	const msgPerson = msg.person();
 
-	/** @type {(s:string, c:string, d:Date, iS:boolean)=>HTMLDivElement} */
+	/** @type {(s:string, c:string, d:Date, iS:boolean)=>HTMLElement} */
 	function mkMessage(sender, content, date, isSystem) {
-		const senderEl = document.createElement("span");
-		senderEl.className = "sender";
-		senderEl.textContent = sender;
-		if(isSystem)
-			senderEl.classList.add("system");
+		const elem = /** @type HTMLElement */
+			((isSystem ? systemMessageTemplate : normalMessageTemplate)
+			.content.cloneNode(true));
 
-		const contentEl = document.createElement("span");
-		contentEl.className = "content";
+		elem.title = date.toString();
+		elem.querySelector(".sender").textContent = sender;
+		const contentEl = elem.querySelector(".content")
 		contentEl.textContent = content;
 		linkifyUrls(contentEl);
 
-		const messageEl = document.createElement("div");
-		messageEl.className = "message";
-		messageEl.title = date.toString();
-		messageEl.replaceChildren(senderEl, " ", contentEl);
-		return messageEl;
+		return elem;
 	}
 
 	let message;
@@ -180,7 +179,7 @@ function appendMessage(msg) {
 	searchForMyName(msg);
 }
 
-/** @param {HTMLDivElement} message */
+/** @param {HTMLElement} message */
 function addMessageAndScroll(message) {
 	// from jQuery's .innerHeight()
 	// TODO try to simplify
@@ -198,7 +197,7 @@ function addMessageAndScroll(message) {
 		logBox.scrollTop = scrollHeight;
 }
 
-/** @param {HTMLSpanElement} messageContent */
+/** @param {Element} messageContent */
 function linkifyUrls(messageContent) {
 	const originalText = messageContent.textContent;
 	const urlMatcher = new RegExp(String.raw`(\w+://[^\s]+)`);

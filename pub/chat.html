@@ -26,7 +26,14 @@
 				<div id="userListWrapper">
 					<ul id="userList"></ul>
 				</div>
-				<div id="messageLog"></div>
+				<div id="messageLog">
+					<template id="normalMessageTemplate">
+						<div class="message"><span class="sender"></span> <span class="content"></span></div>
+					</template>
+					<template id="systemMessageTemplate">
+						<div class="message"><span class="sender system"></span> <span class="content"></span></div>
+					</template>
+				</div>
 				<input type="text" id="message" name="message" autocomplete="off" />
 				<input type="submit" value="Send" />
 				<div id="themeSelectorWrapper">Theme: <select id="themeSelector" name="themeSelector"></select></div>
