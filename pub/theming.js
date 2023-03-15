@@ -16,7 +16,15 @@ if(savedTheme) {
 	setTheme(savedTheme);
 }
 
-const themeData = await fetch("/themeList.json").then(resp=>resp.json());
+themeSelector.addEventListener("change", function () {
+	const val = themeSelector.value;
+	setTheme(val);
+	if(hasStorage)
+		storage.set("savedTheme", val);
+});
+
+const themeDataReq = await fetch("/themeList.json");
+const themeData = await themeDataReq.json();
 
 themeSelector.replaceChildren(
 	...Object.entries(themeData).map(function([name,val]){
@@ -29,10 +37,3 @@ themeSelector.replaceChildren(
 		return opt;
 	})
 );
-
-themeSelector.addEventListener("change", function () {
-	const val = themeSelector.value; // maybe?
-	setTheme(val);
-	if(hasStorage)
-		storage.set("savedTheme", val);
-});
