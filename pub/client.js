@@ -1,12 +1,7 @@
 import storage from "./storage.js";
 
-//import Message from "./Message.js";
+import Message from "./Message.js";
 import TitleNotification from "./TitleNotification.js";
-
-/** @type typeof import("./Message") */
-const Message = window.Message;
-
-/** @typedef {ReturnType<typeof Message.parse>} Message */
 
 const hasStorage = storage !== null;
 

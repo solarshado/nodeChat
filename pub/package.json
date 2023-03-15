@@ -1,6 +1,0 @@
-{
-    "name": "hack",
-    "description": "temp hack to force Message to load as CommonJS",
-    "version": "0.0.1",
-    "type": "common"
-}
