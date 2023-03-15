@@ -1,214 +1,283 @@
-$(document).ready(function() {
-	var loginForm = $("form#loginForm"),
-		loginStatus = $("span#loginStatus"),
-		chatForm = $("form#chatForm"),
-		sendButton = chatForm.children("input:submit"),
-		aliasBox = $("input#name"),
-		rememberMeCbx = $("input#rememberMe"),
-		inputBox = $("input#message"),
-		logBox = $("#messageLog"),
-		userList = $("ul#userList"),
-		storage = window.storage,
-		hasStorage = storage !== null,
-		socket = io.connect(),
-		loggingIn = false,
-		alias = "";
+import storage from "./storage.js";
 
-	setupSocket(socket);
-	handleSavedUsername();
+//import Message from "./Message.js";
+import TitleNotification from "./TitleNotification.js";
 
-	$(window).focus(onWindowFocus).blur(onWindowBlur);
+/** @type typeof import("./Message") */
+const Message = window.Message;
 
-	loginForm.on('submit', function() {
-		var alias_ = aliasBox.val().trim();
-		if(!alias_) return false;
+/** @typedef {ReturnType<typeof Message.parse>} Message */
 
-		alias = alias_;
-		loggingIn = true;
-		loginStatus.text("Logging in...");
-		socket.emit('join', alias);
+const hasStorage = storage !== null;
 
-		if(hasStorage)
-			if(rememberMeCbx.is(':checked'))
-				storage.set("savedUsername", alias);
-			else // clear remembered name
-				storage.set("savedUsername", undefined);
+/** @type HTMLFormElement */
+const loginForm = document.querySelector("form#loginForm");
+/** @type HTMLSpanElement */
+const loginStatus = document.querySelector("span#loginStatus");
+/** @type HTMLFormElement */
+const chatForm = document.querySelector("form#chatForm");
+/** @type HTMLInputElement */
+const sendButton = chatForm.querySelector("input[type='submit']");
+/** @type HTMLInputElement */
+const aliasBox = document.querySelector("input#name");
+/** @type HTMLInputElement */
+const rememberMeCbx = document.querySelector("input#rememberMe");
+/** @type HTMLInputElement */
+const inputBox = document.querySelector("input#message");
+/** @type HTMLDivElement */
+const logBox = document.querySelector("div#messageLog");
+/** @type HTMLUListElement */
+const userList = document.querySelector("ul#userList");
 
-		return false;
-	});
+const socket = io.connect();
 
-	userList.on('click', "li", onUserNameClick);
-	logBox.on('click', ".message .sender:not(.system)", onUserNameClick);
-	logBox.on('click', "a", function() { inputBox.focus(); });
-	inputBox.on('input keyup', function() {
-		sendButton.prop('disabled', !inputBox.val().trim());
-	});
+let loggingIn = false;
+let alias = "";
 
-	function handleSavedUsername() {
-		if(!hasStorage) {
-			rememberMeCbx.attr("disabled", true);
-			return;
-		}
+setupSocket(socket);
+handleSavedUsername();
 
-		var val = storage.get("savedUsername");
-		if(val) {
-			rememberMeCbx.prop('checked', true);
-			aliasBox.val(val);
-		}
-	}
+window.addEventListener("focus", onWindowFocus);
+window.addEventListener("blur", onWindowBlur);
 
-	function loginSucceeded() {
-		loggingIn = false;
-		loginStatus.text("Logged in!");
-		loginForm.hide('slow');
-		chatForm.show('slow', function() { inputBox.focus(); });
-	}
+loginForm.addEventListener("submit", function(evt) {
+	evt.preventDefault();
+	const alias_ = aliasBox.value.trim();
+	if(!alias_)
+		return;
 
-	function loginFailed(message) {
-		loggingIn = false;
-		loginStatus.text("Login failed: " + message);
-	}
+	alias = alias_;
+	loggingIn = true;
+	loginStatus.textContent = "Logging in...";
+	socket.emit('join', alias);
 
-	function setupSocket(socket) {
-		chatForm.on('submit', function() {
-			socket.emit('chatMsg', inputBox.val().trim());
-			inputBox.val('');
-			inputBox.focus();
-			return false;
-		});
-
-		socket.on('chatMsg', preParse(appendMessage));
-		socket.on('join', preParse(appendMessage));
-		socket.on('leave', preParse(appendMessage));
-		socket.on('userList', preParse(updateUserList));
-		socket.on('rejectUsername', loginFailed);
-	}
-
-	function preParse(func) {
-		return function(data) {
-			func(Message.parse(data));
-		}
-	}
-
-	function appendMessage(msg) {
-		var msgType = msg.type(),
-			msgPerson = msg.person(),
-			message = $('<div class="message" />'),
-			sender = $('<span class="sender" />'),
-			content = $('<span class="content" />');
-		message.append(sender).append(" ").append(content);
-		
-		message.prop('title', msg.date());
-
-		if(msgType === 'joined') {
-			if(loggingIn && msgPerson === alias) {
-				loginSucceeded();
-				return;
-			}
-			else {
-				sender.addClass('system');
-				sender.text('Joined');
-				content.text(msgPerson);
-			}
-		}
-		else if(msgType === 'left') {
-			sender.addClass('system');
-			sender.text('Left');
-			content.text(msgPerson);
-		}
-		else if(msgType === 'said') {
-			sender.text(msgPerson);
-			content.text(msg.content());
-			linkifyUrls(content);
-		}
-
-		addMessageandScroll(message);
-
-		if(msgType === 'joined' || msgType === 'left')
-			updateUserList(msg);
-
-		if(!document.hasFocus())
-			TitleNotification.enable();
-
-		searchForMyName(msg);
-	}
-
-	function addMessageandScroll(message) {
-		var innerHeight = logBox.innerHeight(),
-		    scrollHeight = logBox.prop("scrollHeight"),
-		    scrollTop = logBox.prop("scrollTop");
-
-		// grab sizes BEFORE adding the message
-		logBox.append(message);
-
-		// only scroll if scrolled to bottom beforehand
-		if(((innerHeight + scrollTop) - scrollHeight) >= 0)
-			logBox.scrollTop(scrollHeight);
-	}
-
-	function linkifyUrls(messageContent) {
-		var html = messageContent.html(),
-			urlMatcher = new RegExp("(\\w+://[^\\s]+)",'g'),
-			linkTemplate = '<a target="_blank" rel="noreferrer" href="$&">$&</a>';
-
-		html = html.replace(urlMatcher, linkTemplate);
-
-		messageContent.html(html);
-	}
-
-	function searchForMyName(message) {
-		if(message.type() !== "said") return;
-		if(!TitleNotification.isEnabled()) return;
-
-		var aliasTag = "@"+alias;
-
-		if(message.content().indexOf(aliasTag) !== -1)
-			TitleNotification.enableStar();
-	}
-
-	function updateUserList(msg) {
-		var msgType = msg.type(),
-			who = msg.person(),
-			list = msg.content();
-		
-		if(msgType === 'joined') {
-			userList.append(buildListItem(who));
-		}
-		else if(msgType === 'left') {
-			getListItem(who).remove();
-		}
-		else if(msgType === 'userList') {
-			userList.children('li').remove();
-			$.each(list, function(i, val) {
-				userList.append(buildListItem(val));
-			});
-		}
-
-		function getListItem(username) {
-			return userList
-				.children()
-				.filterByData('username', username);
-		}
-		function buildListItem(username) {
-			return $('<li />')
-				.text(username)
-				.data('username',username);
-		}
-	}
-
-	function onUserNameClick() {
-		var username = $(this).text(),
-		    oldValue = inputBox.val();
-		inputBox.val(oldValue + ('@'+username) + " ");
-		inputBox.focus();
-	}
-
-	function onWindowFocus() {
-		TitleNotification.disable();
-	}
-
-	function onWindowBlur() {
-		$('.message.lastSeen').removeClass("lastSeen");
-		$('.message').last().addClass("lastSeen");
+	if(hasStorage) {
+		if(rememberMeCbx.checked)
+			storage.set("savedUsername", alias);
+		else // clear remembered name
+			storage.set("savedUsername", undefined);
 	}
 });
+
+/** @param {Function} handler */
+const filterTarget = (tgtSelector,handler) =>
+	function (evt) {
+		/** @type HTMLElement */
+		const tgt = evt.target;
+		if(!tgt.matches(tgtSelector)) return;
+		handler.call(this, evt);
+	};
+
+userList.addEventListener('click', filterTarget("li", onUserNameClick));
+logBox.addEventListener('click', filterTarget(".message .sender:not(.system)", onUserNameClick));
+
+logBox.addEventListener('click', filterTarget("a",()=> inputBox.focus()));
+
+function updateSendButtonEnabled() {
+	sendButton.disabled = !inputBox.value.trim();
+}
+
+inputBox.addEventListener('input', updateSendButtonEnabled);
+inputBox.addEventListener('keyup', updateSendButtonEnabled);
+
+function handleSavedUsername() {
+	if(!hasStorage) {
+		rememberMeCbx.disabled = true;
+		return;
+	}
+
+	const val = storage.get("savedUsername");
+	if(val) {
+		rememberMeCbx.checked = true;
+		aliasBox.value = val;
+	}
+}
+
+function loginSucceeded() {
+	loggingIn = false;
+	loginStatus.textContent = "Logged in!";
+	/* TODO? port transition/animation
+	loginForm.hide('slow');
+	chatForm.show('slow', function() { inputBox.focus(); });
+	*/
+	loginForm.style.display = "none";
+	chatForm.style.display = "block";
+	inputBox.focus();
+}
+
+function loginFailed(message) {
+	loggingIn = false;
+	loginStatus.textContent = "Login failed: " + message;
+}
+
+function setupSocket(socket) {
+	chatForm.addEventListener('submit', function(evt) {
+		evt.preventDefault()
+		socket.emit('chatMsg', inputBox.value.trim());
+		inputBox.value = "";
+		inputBox.focus();
+		updateSendButtonEnabled();
+	});
+
+	socket.on('chatMsg', preParse(appendMessage));
+	socket.on('join', preParse(appendMessage));
+	socket.on('leave', preParse(appendMessage));
+	socket.on('userList', preParse(updateUserList));
+	socket.on('rejectUsername', loginFailed);
+}
+
+function preParse(func) {
+	return function(data) {
+		func(Message.parse(data));
+	}
+}
+
+/** @param {Message} msg */
+function appendMessage(msg) {
+	const msgType = msg.type();
+	const msgPerson = msg.person();
+
+	/** @type {(s:string, c:string, d:Date, iS:boolean)=>HTMLDivElement} */
+	function mkMessage(sender, content, date, isSystem) {
+		const senderEl = document.createElement("span");
+		senderEl.className = "sender";
+		senderEl.textContent = sender;
+		if(isSystem)
+			senderEl.classList.add("system");
+
+		const contentEl = document.createElement("span");
+		contentEl.className = "content";
+		contentEl.textContent = content;
+		linkifyUrls(contentEl);
+
+		const messageEl = document.createElement("div");
+		messageEl.className = "message";
+		messageEl.title = date.toString();
+		messageEl.replaceChildren(senderEl, " ", contentEl);
+		return messageEl;
+	}
+
+	let message;
+	if(msgType === 'joined') {
+		if(loggingIn && msgPerson === alias) {
+			loginSucceeded();
+			return;
+		}
+		else {
+			message = mkMessage("Joined",msgPerson,msg.date(),true);
+		}
+	}
+	else if(msgType === 'left') {
+		message = mkMessage("Left",msgPerson,msg.date(),true);
+	}
+	else if(msgType === 'said') {
+		message = mkMessage(msgPerson,msg.content(),msg.date(),false);
+	}
+
+	addMessageAndScroll(message);
+
+	if(msgType === 'joined' || msgType === 'left')
+		updateUserList(msg);
+
+	if(!document.hasFocus())
+		TitleNotification.enable();
+
+	searchForMyName(msg);
+}
+
+/** @param {HTMLDivElement} message */
+function addMessageAndScroll(message) {
+	// from jQuery's .innerHeight()
+	// TODO try to simplify
+	// see https://thisthat.dev/client-height-vs-offset-height-vs-scroll-height/
+	const innerHeight = Math.max(logBox.scrollHeight, logBox.offsetHeight, logBox.clientHeight)
+
+	const scrollHeight = logBox.scrollHeight;
+	const scrollTop = logBox.scrollTop;
+
+	// grab sizes BEFORE adding the message
+	logBox.append(message);
+
+	// only scroll if scrolled to bottom beforehand
+	if(((innerHeight + scrollTop) - scrollHeight) >= 0)
+		logBox.scrollTop = scrollHeight;
+}
+
+/** @param {HTMLSpanElement} messageContent */
+function linkifyUrls(messageContent) {
+	const originalText = messageContent.textContent;
+	const urlMatcher = new RegExp(String.raw`(\w+://[^\s]+)`);
+
+	function mkLink(url) {
+		const elem = document.createElement("a");
+		elem.target = "_blank";
+		elem.rel = "noreferrer";
+		elem.href = elem.textContent = url;
+		return elem;
+	}
+
+	// not sure how to avoid repeated regex execution here without
+	// hurting readability
+	const newContent = originalText.split(urlMatcher).map(s=>
+		urlMatcher.test(s) ? mkLink(s) : s
+	)
+
+	messageContent.replaceChildren(...newContent);
+}
+
+/** @param {Message} message */
+function searchForMyName(message) {
+	if(message.type() !== "said")
+		return;
+	if(!TitleNotification.isEnabled())
+		return;
+
+	const aliasTag = "@"+alias;
+
+	if(message.content().indexOf(aliasTag) !== -1)
+		TitleNotification.enableStar();
+}
+
+/** @param {Message} msg */
+function updateUserList(msg) {
+	const msgType = msg.type();
+	const who = msg.person();
+	/** @type string[] */
+	const list = msg.content();
+
+	if(msgType === 'joined') {
+		userList.append(buildListItem(who));
+	}
+	else if(msgType === 'left') {
+		for(const child of userList.children)
+			if(child.dataset.username === who)
+				child.remove();
+	}
+	else if(msgType === 'userList') {
+		userList.replaceChildren(...list.map(buildListItem));
+	}
+
+	function buildListItem(username) {
+		const elem = document.createElement("li");
+		elem.textContent = username;
+		elem.dataset.username = username;
+		return elem;
+	}
+}
+
+/** @param {MouseEvent} event */
+function onUserNameClick(event) {
+	const username = event.target.textContent;
+	inputBox.value += ('@' + username + " ");
+	inputBox.focus();
+	updateSendButtonEnabled();
+}
+
+function onWindowFocus() {
+	TitleNotification.disable();
+}
+
+function onWindowBlur() {
+	document.querySelectorAll('.message.lastSeen').forEach(m=>m.classList.remove("lastSeen"));
+	document.querySelector('.message:last-of-type')?.classList.add("lastSeen");
+}

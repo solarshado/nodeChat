@@ -1,41 +1,38 @@
-$(document).ready(function() {
-	var themeStyle = $("link#theme"),
-		themeSelector = $("select#themeSelector"),
-		themeLibrary = {},
-		storage = window.storage,
-		hasStorage = storage !== null;
+import storage from "./storage.js";
 
-	if(hasStorage) {
-		var val = storage.get("savedTheme");
-		if(val)
-			setTheme(val);
-	}
+/** @type HTMLLinkElement */
+const themeStyle = document.querySelector("link#theme");
+/** @type HTMLSelectElement */
+const themeSelector = document.querySelector("select#themeSelector");
+const hasStorage = storage !== null;
 
-	$.get("/themeList.json", function(data){
-		var savedTheme = hasStorage ? storage.get("savedTheme") : null;
-		themeLibrary = data;
-		themeSelector.children().remove();
+function setTheme(name){
+	themeStyle.href = "themes/" + name + ".css";
+}
 
-		Object.keys(data).forEach(function(name){
-			var val = data[name],
-				 opt = $("<option>")
-					.text(name)
-					.val(val);
-			if(savedTheme && savedTheme == val)
-				opt.attr("selected", true);
+const savedTheme = hasStorage ? storage.get("savedTheme") : null;
 
-			themeSelector.append(opt);
-		});	
-	});
+if(savedTheme) {
+	setTheme(savedTheme);
+}
 
-	themeSelector.change(function () {
-		var val = themeSelector.val();
-		setTheme(val);
-		if(hasStorage)
-			storage.set("savedTheme", val);
-	});
+const themeData = await fetch("/themeList.json").then(resp=>resp.json());
 
-	function setTheme(name){
-		themeStyle.attr("href","themes/" + name + ".css")
-	}
+themeSelector.replaceChildren(
+	...Object.entries(themeData).map(function([name,val]){
+		const opt = document.createElement("option");
+		opt.text = name;
+		opt.value = val;
+		if(savedTheme && savedTheme == val)
+			opt.selected = true;
+
+		return opt;
+	})
+);
+
+themeSelector.addEventListener("change", function () {
+	const val = themeSelector.value; // maybe?
+	setTheme(val);
+	if(hasStorage)
+		storage.set("savedTheme", val);
 });

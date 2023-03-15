@@ -1,31 +1,30 @@
-var storage = (function() {
-	var isSupported = false;
-
+const isSupported = (function() {
 	try {
-		isSupported = 'localStorage' in window &&
-			      window['localStorage'] !== null;
-	} catch (e) { /* no-op*/ } 
-
-	if(!isSupported) return null;
-	
-	var impl = window.localStorage;
-
-	function setValue(key,value){
-		if(value === undefined)
-			impl.removeItem(key);
-		else
-			impl[String(key)] = value;
+		return 'localStorage' in window &&
+			window['localStorage'] !== null;
 	}
-
-	function getValue(key,parser){
-		var val = impl[key];
-		return (typeof(parser) === "function") ?
-			parser(val) :
-			val;
+	catch (e) {
+		return false;
 	}
+})();
 
-	return {
-		get: getValue,
-		set: setValue,
-	};
-})()
+const impl = window.localStorage;
+
+function setValue(key,value){
+	if(value === undefined)
+		impl.removeItem(key);
+	else
+		impl[String(key)] = value;
+}
+
+function getValue(key,parser){
+	const val = impl[key];
+	return (typeof(parser) === "function") ?
+		parser(val) :
+		val;
+}
+
+export default ( isSupported ? {
+	get: getValue,
+	set: setValue,
+} : null );
