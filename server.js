@@ -32,7 +32,7 @@ function handleRequest(request, response) {
 			(basename === "" || rawExts.includes(extname)))
 
 	if(shouldServeStatic) {
-		   serveStaticFile(response, dirname, basename);
+		serveStaticFile(response, dirname, basename);
 	}
 	else {
 		response.writeHead(400);

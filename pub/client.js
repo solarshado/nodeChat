@@ -244,7 +244,7 @@ function updateUserList(msg) {
 	}
 	else if(type === MESSAGE_TYPE.LEFT) {
 		for(const child of userList.children)
-			if(child.dataset.username === msg.person)
+			if(/** @type HTMLElement */(child).dataset["username"] === msg.person)
 				child.remove();
 	}
 	else if(type === MESSAGE_TYPE.USER_LIST) {
@@ -254,14 +254,14 @@ function updateUserList(msg) {
 	function buildListItem(username) {
 		const elem = document.createElement("li");
 		elem.textContent = username;
-		elem.dataset.username = username;
+		elem.dataset["username"] = username;
 		return elem;
 	}
 }
 
 /** @param {MouseEvent} event */
 function onUserNameClick(event) {
-	const username = event.target.textContent;
+	const username = /** @type HTMLElement */(event.target).textContent;
 	inputBox.value += ('@' + username + " ");
 	inputBox.focus();
 	updateSendButtonEnabled();
