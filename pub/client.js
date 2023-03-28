@@ -4,6 +4,8 @@ import { default as Message, MESSAGE_TYPE } from "./Message.js";
 /** @typedef {import("./Message.js").Message} Message */
 import TitleNotification from "./TitleNotification.js";
 
+import { io } from "./socket.io/socket.io.esm.min.js";
+
 const hasStorage = storage !== null;
 
 /** @type HTMLFormElement */
@@ -29,7 +31,7 @@ const normalMessageTemplate = document.querySelector("template#normalMessageTemp
 /** @type HTMLTemplateElement */
 const systemMessageTemplate = document.querySelector("template#systemMessageTemplate");
 
-const socket = io.connect();
+const socket = io();
 
 let loggingIn = false;
 let alias = "";

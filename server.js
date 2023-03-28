@@ -5,10 +5,10 @@ import { createServer } from "node:http";
 
 import { default as Message } from "./pub/Message.js";
 
-import sio from "socket.io";
+import { Server } from "socket.io";
 
 const server = createServer(handleRequest);
-const io = sio(server);
+const io = new Server(server);
 
 const listenIP = process.env["IP"];
 const listenPort = +process.env["PORT"];
