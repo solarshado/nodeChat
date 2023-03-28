@@ -1,70 +1,77 @@
-/** @typedef {"joined"|"left"|"said"|"userList"} MessageType */
-
 /** @typedef {
- {type:"joined"|"left", who:string, what?:undefined, when:Date}|
- {type:"said", who:string, what:string, when:Date}|
- {type:"userList", who?:undefined, what:string[], when?:undefined}
- } MessageOpts
+ {type:"joined"|"left", person:string, date:Date}|
+ {type:"said", person:string, content:string, date:Date}|
+ {type:"userList", content:string[]}
+ } Message
 */
 
-export class Message {
-	/** @type MessageType */
-	#type;
-	/** @type string */
-	#who;
-	/** @type string|string[] */
-	#what;
-	/** @type Date */
-	#when;
+/** @typedef {Message["type"]} MessageType */
 
-	/** @param {MessageOpts} obj */
-	constructor(obj) {
-		const {type, who, what, when} = obj;
-		this.#type = type;
-		this.#who = who;
-		this.#what = what;
-		this.#when = new Date(when);
-	}
-	type() { return this.#type; }
-	person() { return this.#who; }
-	content() { return this.#what; }
-	date() { return this.#when; }
-	toJSON() {
-		return JSON.stringify({
-			type: this.#type,
-			who: this.#who,
-			what: this.#what,
-			when: this.#when,
-		});
-	}
+/** @enum MessageType */
+export const MESSAGE_TYPE = Object.freeze({
+	JOINED: 'joined',
+	LEFT: 'left',
+	SAID: 'said',
+	USER_LIST: 'userList',
+});
 
-	/** @param {string} jsonString */
-	static parse(jsonString) {
-		return new Message(JSON.parse(jsonString));
-	}
+/**
+* @param {string} jsonString
+* @returns {Message}
+*/
+export function parse(jsonString) {
+	const {type, person, date, content} = JSON.parse(jsonString);
 
-	/** @param {string} who */
-	static joined(who, when = new Date()) {
-		return new Message({'type': 'joined', 'who': who, 'when': when});
-	}
+	const isValidType = typeof type === "string" && (
+		type === MESSAGE_TYPE.JOINED || type === MESSAGE_TYPE.LEFT ||
+		type === MESSAGE_TYPE.SAID || type === MESSAGE_TYPE.USER_LIST);
+	if(!isValidType)
+		throw new Error(`invalid 'type' value: ${type}`);
 
-	/** @param {string} who */
-	static left(who, when = new Date()) {
-		return new Message({'type': 'left', 'who': who, 'when': when});
-	}
+	const isValidPerson = typeof person == "string";
+	if(type !== MESSAGE_TYPE.USER_LIST && !isValidPerson)
+		throw new Error(`invalid 'person' value: ${person}`);
 
-	/**
-	* @param {string} who
-	* @param {string} what
-	*/
-	static said(who, what, when = new Date()) {
-		return new Message({'type': 'said', 'who': who, 'what': what, 'when': when});
-	}
+	if(type === MESSAGE_TYPE.SAID && typeof content !== "string")
+		throw new Error(`invalid 'content' value for type=MESSAGE_TYPE.SAID: ${content}`);
 
-	/** @param {string[]} usernameArray */
-	static userList(usernameArray) {
-		return new Message({'type': 'userList', 'what': usernameArray});
-	}
+	if(type === MESSAGE_TYPE.USER_LIST &&
+		!(Array.isArray(content) && typeof content[0] === "string"))
+		throw new Error(`invalid 'content' value for type=MESSAGE_TYPE.USER_LIST: ${content}`);
+
+	return {type, person, date: new Date(date), content};
 }
 
-export default Message;
+/**
+* @param {string} who
+* @returns {Message}
+*/
+export function joined(who, when = new Date()) {
+	return {type: MESSAGE_TYPE.JOINED, person: who, date: when};
+}
+
+/**
+* @param {string} who
+* @returns {Message}
+*/
+export function left(who, when = new Date()) {
+	return {type: MESSAGE_TYPE.LEFT, person: who, date: when};
+}
+
+/**
+* @param {string} who
+* @param {string} what
+* @returns {Message}
+*/
+export function said(who, what, when = new Date()) {
+	return {type: MESSAGE_TYPE.SAID, person: who, content: what, date: when};
+}
+
+/** @param {string[]} usernameArray
+* @returns {Message}
+*/
+export function userList(usernameArray) {
+	return {type: MESSAGE_TYPE.USER_LIST, content: usernameArray};
+}
+
+export default {joined, left, said, userList, parse};

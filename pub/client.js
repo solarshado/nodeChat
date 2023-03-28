@@ -1,6 +1,7 @@
 import storage from "./storage.js";
 
-import Message from "./Message.js";
+import { default as Message, MESSAGE_TYPE } from "./Message.js";
+/** @typedef {import("./Message.js").Message} Message */
 import TitleNotification from "./TitleNotification.js";
 
 const hasStorage = storage !== null;
@@ -133,8 +134,10 @@ function preParse(func) {
 
 /** @param {Message} msg */
 function appendMessage(msg) {
-	const msgType = msg.type();
-	const msgPerson = msg.person();
+	if(msg.type === MESSAGE_TYPE.USER_LIST)
+		return; // we don't do that here
+
+	const { type, person } = msg;
 
 	/** @type {(s:string, c:string, d:Date, iS:boolean)=>HTMLElement} */
 	function mkMessage(sender, content, date, isSystem) {
@@ -152,25 +155,25 @@ function appendMessage(msg) {
 	}
 
 	let message;
-	if(msgType === 'joined') {
-		if(loggingIn && msgPerson === alias) {
+	if(type === MESSAGE_TYPE.JOINED) {
+		if(loggingIn && person === alias) {
 			loginSucceeded();
 			return;
 		}
 		else {
-			message = mkMessage("Joined",msgPerson,msg.date(),true);
+			message = mkMessage("Joined",person,msg.date,true);
 		}
 	}
-	else if(msgType === 'left') {
-		message = mkMessage("Left",msgPerson,msg.date(),true);
+	else if(type === MESSAGE_TYPE.LEFT) {
+		message = mkMessage("Left",person,msg.date,true);
 	}
-	else if(msgType === 'said') {
-		message = mkMessage(msgPerson,msg.content(),msg.date(),false);
+	else if(type === MESSAGE_TYPE.SAID) {
+		message = mkMessage(person,msg.content,msg.date,false);
 	}
 
 	addMessageAndScroll(message);
 
-	if(msgType === 'joined' || msgType === 'left')
+	if(type === MESSAGE_TYPE.JOINED || type === MESSAGE_TYPE.LEFT)
 		updateUserList(msg);
 
 	if(!document.hasFocus())
@@ -221,34 +224,31 @@ function linkifyUrls(messageContent) {
 
 /** @param {Message} message */
 function searchForMyName(message) {
-	if(message.type() !== "said")
+	if(message.type !== MESSAGE_TYPE.SAID)
 		return;
 	if(!TitleNotification.isEnabled())
 		return;
 
 	const aliasTag = "@"+alias;
 
-	if(message.content().indexOf(aliasTag) !== -1)
+	if(message.content.indexOf(aliasTag) !== -1)
 		TitleNotification.enableStar();
 }
 
 /** @param {Message} msg */
 function updateUserList(msg) {
-	const msgType = msg.type();
-	const who = msg.person();
-	/** @type string[] */
-	const list = msg.content();
+	const { type } = msg;
 
-	if(msgType === 'joined') {
-		userList.append(buildListItem(who));
+	if(type === MESSAGE_TYPE.JOINED) {
+		userList.append(buildListItem(msg.person));
 	}
-	else if(msgType === 'left') {
+	else if(type === MESSAGE_TYPE.LEFT) {
 		for(const child of userList.children)
-			if(child.dataset.username === who)
+			if(child.dataset.username === msg.person)
 				child.remove();
 	}
-	else if(msgType === 'userList') {
-		userList.replaceChildren(...list.map(buildListItem));
+	else if(type === MESSAGE_TYPE.USER_LIST) {
+		userList.replaceChildren(...msg.content.map(buildListItem));
 	}
 
 	function buildListItem(username) {

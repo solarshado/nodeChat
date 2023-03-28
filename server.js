@@ -3,7 +3,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import { createServer } from "node:http";
 
-import Message from "./pub/Message.js";
+import { default as Message } from "./pub/Message.js";
 
 import sio from "socket.io";
 
@@ -97,7 +97,7 @@ io.on('connection', function (socket) {
 
 		const time = new Date();
 		removeUser(name);
-		socket.broadcast.emit('leave', Message.left(name, time).toJSON());
+		socket.broadcast.emit('leave', JSON.stringify(Message.left(name, time)));
 	});
 
 	socket.on('join', function (name) {
@@ -105,8 +105,8 @@ io.on('connection', function (socket) {
 		if(userList.indexOf(name) === -1) {
 			socket.name = name;
 			addUser(name);
-			io.emit('join', Message.joined(name,time).toJSON());
-			socket.emit('userList', Message.userList(userList));
+			io.emit('join', JSON.stringify(Message.joined(name,time)));
+			socket.emit('userList', JSON.stringify(Message.userList(userList)));
 		}
 		else { // username already exists
 			socket.emit('rejectUsername', "Username already in use.");
@@ -122,7 +122,7 @@ io.on('connection', function (socket) {
 			return; // ignore messages from connections with no username
 
 		const time = new Date();
-		const msg = Message.said(name, text, time).toJSON();
+		const msg = JSON.stringify(Message.said(name, text, time));
 
 		socket.emit('chatMsg', msg);
 		socket.broadcast.emit('chatMsg', msg);
