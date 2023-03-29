@@ -4,7 +4,7 @@ import { default as Message, MESSAGE_TYPE } from "./Message.js";
 /** @typedef {import("./Message.js").Message} Message */
 import TitleNotification from "./TitleNotification.js";
 
-import { io } from "./socket.io/socket.io.esm.min.js";
+import { io } from "socket.io-client";
 
 const hasStorage = storage !== null;
 
