@@ -147,7 +147,9 @@ function appendMessage(msg) {
 			((isSystem ? systemMessageTemplate : normalMessageTemplate)
 			.content.cloneNode(true));
 
-		elem.title = date.toString();
+		/** @type HTMLElement */
+		(elem.querySelector(".message")).title = date.toString();
+
 		elem.querySelector(".sender").textContent = sender;
 		const contentEl = elem.querySelector(".content")
 		contentEl.textContent = content;
