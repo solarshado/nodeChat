@@ -1,0 +1,14 @@
+version: '3.0'
+
+services:
+  nodechat:
+    build:
+      context: .
+    ports:
+      - 80:80
+    environment:
+      - IP=0.0.0.0
+      - PORT=80
+#    volumes:
+#      - ./:/app
+#      - /app/node_modules
