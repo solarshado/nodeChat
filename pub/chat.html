@@ -24,7 +24,7 @@
 				<br />
 				<span id="loginStatus"></span>
 			</form>
-			<form id="chatForm">
+			<form id="chatForm" class="hidden">
 				<div id="userListWrapper">
 					<ul id="userList"></ul>
 				</div>
@@ -36,8 +36,10 @@
 						<div class="message"><span class="sender system"></span> <span class="content"></span></div>
 					</template>
 				</div>
-				<input type="text" id="message" name="message" autocomplete="off" />
-				<input type="submit" value="Send" />
+				<div id="messageEntryWrapper">
+					<input type="text" id="message" name="message" autocomplete="off" />
+					<input type="submit" value="Send" />
+				</div>
 				<div id="themeSelectorWrapper">Theme: <select id="themeSelector" name="themeSelector"></select></div>
 			</form>
 		</div>

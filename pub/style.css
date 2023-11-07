@@ -1,20 +1,39 @@
-form#chatForm {
-	display: none;
+body {
+	height: 100vh;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 div#content {
-	margin-left: auto ;
-	margin-right: auto ;
-	width: 800px ;
+	padding: 0.25em;
+	flex-grow: 1;
+	min-height: 50%;
+}
+
+#codeOnGitHub {
+	font-size: smaller;
+	align-self: flex-end;
+	margin: .5em;
+}
+
+form.hidden {
+	display: none !important;
+}
+
+form#chatForm {
+	display: grid;
+	grid-template-columns: auto fit-content(10em);
+	grid-template-rows: auto min-content;
+	height: 100%;
 }
 
 #messageLog {
-	width: 575px;
-	height: 500px;
+	order: 0;
+	max-height: 100%;
 	border: solid 2px grey;
-	overflow-y: scroll;
+	overflow-y: auto;
 	padding: 4px;
-	margin-bottom: 1em;
 }
 
 #messageLog .message {
@@ -41,12 +60,10 @@ div#content {
 }
 
 #userListWrapper {
-	width: 200px;
-	height: 500px;
+	order: 1;
 	border: solid 2px grey;
 	overflow-y: scroll;
 	padding: 4px;
-	float: right;
 }
 
 #userList {
@@ -62,19 +79,27 @@ div#content {
 	border-radius: 3px;
 	background-color: lightGreen;
 	text-align: center;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 #themeSelectorWrapper {
-	display: inline;
-	float: right;
+	order: 3;
+	white-space: nowrap;
+	margin: auto;
 }
 
-input#message {
-	width: 65%;
+#messageEntryWrapper {
+	order: 2;
+	display: flex;
+	padding-block: 0.4em;
+	padding-inline: 0.2em;
 }
 
-#codeOnGitHub {
-	position: fixed;
-	bottom: 10px;
-	right: 10px;
+#messageEntryWrapper input#message {
+	flex-grow: 1;
+}
+
+#messageEntryWrapper input[type="submit"] {
+	margin-inline: 0.2em;
 }

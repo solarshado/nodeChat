@@ -102,8 +102,8 @@ function loginSucceeded() {
 	loginForm.hide('slow');
 	chatForm.show('slow', function() { inputBox.focus(); });
 	*/
-	loginForm.style.display = "none";
-	chatForm.style.display = "block";
+	loginForm.classList.add("hidden");
+	chatForm.classList.remove("hidden");
 	inputBox.focus();
 }
 
