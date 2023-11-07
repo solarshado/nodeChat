@@ -102,8 +102,8 @@ function loginSucceeded() {
 	loginForm.hide('slow');
 	chatForm.show('slow', function() { inputBox.focus(); });
 	*/
-	loginForm.style.display = "none";
-	chatForm.style.display = "block";
+	loginForm.classList.add("hidden");
+	chatForm.classList.remove("hidden");
 	inputBox.focus();
 }
 
@@ -147,7 +147,9 @@ function appendMessage(msg) {
 			((isSystem ? systemMessageTemplate : normalMessageTemplate)
 			.content.cloneNode(true));
 
-		elem.title = date.toString();
+		/** @type HTMLElement */
+		(elem.querySelector(".message")).title = date.toString();
+
 		elem.querySelector(".sender").textContent = sender;
 		const contentEl = elem.querySelector(".content")
 		contentEl.textContent = content;
