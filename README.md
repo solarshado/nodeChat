@@ -1,3 +1,5 @@
+[![Fly Deploy](https://github.com/solarshado/nodeChat/actions/workflows/fly.yml/badge.svg?branch=forFlyIO)](https://github.com/solarshado/nodeChat/actions/workflows/fly.yml) [live demo](https://nodechat.fly.dev/)
+
 nodeChat
 ========
 
